@@ -1,8 +1,10 @@
 'use client'
 import Image from 'next/image'
+import React from 'react'
 
 export default function Login() {
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         console.log("abcdef");
