@@ -153,8 +153,18 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
+<<<<<<< HEAD
     await queryInterface.dropTable('lecture');
     await queryInterface.dropTable('chapter');
     await queryInterface.dropTable('course');
+=======
+    // await queryInterface.dropTable('lectures');
+    // await queryInterface.dropTable('chapters');
+    // await queryInterface.dropTable('courses');
+    // await queryInterface.dropTable('documents');
+    // await queryInterface.dropTable('categories');
+    await queryInterface.dropTable('documentlecture');
+    // await queryInterface.dropTable('documentcategory');
+>>>>>>> 2adc35cd1bfe891dd5cada2164a47ab460c70cbe
   },
 };

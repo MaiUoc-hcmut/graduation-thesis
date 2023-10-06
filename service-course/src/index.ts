@@ -1,5 +1,3 @@
-import { NextFunction } from "express";
-
 const express = require('express');
 const db = require('./config/db')
 const route = require('./routes')
@@ -22,13 +20,13 @@ app.use(
 
 route(app)
 
-app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log(error);
-});
+// app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+//   console.log(error);
+// });
 
 
 
 
 app.listen(3001, () => {
-  console.log('Listenning on port 3000');
+  console.log('Listenning on port 3001');
 });

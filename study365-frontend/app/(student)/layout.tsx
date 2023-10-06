@@ -4,7 +4,7 @@ export const metadata = {
 }
 import '@/styles/global.css'
 import Header from '@/components/Header'
-
+import { ReduxProvider } from '@/redux/provider'
 
 export default function RootLayout({
   children,
@@ -15,8 +15,9 @@ export default function RootLayout({
     <html lang="en">
 
       <body>
-        <Header />
-        {children}
+        <ReduxProvider>
+          {children}
+        </ReduxProvider>
       </body>
     </html>
   )

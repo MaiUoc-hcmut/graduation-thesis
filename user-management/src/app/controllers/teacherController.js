@@ -4,7 +4,7 @@ const admin = require('firebase-admin');
 const { ref, getDownloadURL, uploadBytesResumable, getStorage } = require('firebase/storage');
 const { initializeApp } = require('firebase/app');
 
-const Student = require('../models/student');
+const Teacher = require('../models/teacher');
 const createError = require('http-errors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -16,62 +16,60 @@ initializeApp(firebaseConfig);
 const storage = getStorage();
 
 
-class StudentController {
-    getAllStudent = async (req, res, next) => {
+class TeacherController {
+    getAllTeacher = async (req, res, next) => {
         try {
-            const students = await Student.findAll();
-            res.status(200).json(students);
+            const teachers = await Teacher.findAll();
+            res.status(200).json(teachers);
         } catch (error) {
             console.log(error.message);
             res.status(400).json({ error: error.message });
         }
     }
 
-    getStudentById = async (req, res, next) => {
+    getTeacherById = async (req, res, next) => {
         try {
-            const student = await Student.findOne({
-                where: { id: req.params.studentId }
+            const teacher = await Teacher.findOne({
+                where: { id: req.params.teacherId }
             })
 
-            if (!student) return res.status(404).json({ message: "Student not found!" });
+            if (!teacher) return res.status(404).json({ message: "Teacher not found!" });
 
-            res.status(200).json(student);
+            res.status(200).json(teacher);
         } catch (error) {
             console.log(error.message);
             res.status(400).json(error.message);
         }
     }
 
-    getStudentByEmail = async (req, res, next) => {
+    getTeacherByEmail = async (req, res, next) => {
         try {
-            const student = await Student.findOne({
+            const teacher = await Teacher.findOne({
                 where: { email: req.body.email }
             })
 
-            if (!student) return res.status(404).json({ message: "Student not found!" });
+            if (!teacher) return res.status(404).json({ message: "Teacher not found!" });
 
-            res.status(200).json(student);
+            res.status(200).json(teacher);
         } catch (error) {
             console.log(error.message);
             res.status(400).json(error.message);
         }
     }
 
-    updateStudent = async (req, res, next) => {
+    updateTeacher = async (req, res, next) => {
         try {
-            const studentId = req.params.studentId;
+            const teacher = Teacher.findOne({
+                where: {
+                    id: req.body.id
+                }
+            })
+            if (!teacher) return res.status(404).send({ error: "Teacher not found!" });
 
-            if (studentId != req.student.dataValues.id)
-                return res.status(401).json({ message: "You do not have permission to do this action!" });
-
-            const student = await Student.findOne({
-                where: { id: studentId }
-            });
-
-            await student.update(req.body);
+            await teacher.update(req.body);
             res.status(200).send({
                 updated: true,
-                student
+                teacher
             });
         } catch (error) {
             console.log(error.message);
@@ -80,16 +78,15 @@ class StudentController {
 
     uploadAvatar = async (req, res, next) => {
         try {
-            const studentId = req.params.studentId;
-            if (req.student.dataValues.id != studentId) 
-                return res.status(401).json(createError.Unauthorized('You do not have permission to do this action!'));
-            const student = await Student.findOne({
+            const teacherId = req.params.teacherId;
+            if (req.teacher.dataValues.id !== teacherId) return res.status(401).json(createError.Unauthorized('You do not have permission to do this action!'));
+            const teacher = await Teacher.findOne({
                 where: {
-                    id: studentId
+                    id: teacherId
                 }
             })
 
-            if (!student) return res.status(404).json(createError.NotFound("Student doesn't exist"));
+            if (!teacher) return res.status(404).json(createError.NotFound("teacher doesn't exist"));
 
             const dateTime = Photo.giveCurrentDateTime();
 
@@ -107,7 +104,7 @@ class StudentController {
             // Grab the public url
             const downloadURL = await getDownloadURL(snapshot.ref);
 
-            student.update({
+            teacher.update({
                 avatar: downloadURL
             })
 
@@ -129,21 +126,21 @@ class StudentController {
             const accessToken = req.headers.authorization;
             const accessTokenSecretKey = process.env.ACCESS_TOKEN_SECRET;
 
-            const verifyStudent = jwt.verify(accessToken, accessTokenSecretKey);
+            const verifyTeacher = jwt.verify(accessToken, accessTokenSecretKey);
 
-            const student = Student.findOne({
-                where: { id: verifyStudent.id }
+            const teacher = Teacher.findOne({
+                where: { id: verifyTeacher.id }
             });
 
-            const verifyPassword = await bcrypt.compare(oldPassword, student.password);
+            const verifyPassword = await bcrypt.compare(oldPassword, teacher.password);
             if (verifyPassword) {
                 const hashPassword = await bcrypt.hash(newPassword, 12);
-                await student.update({ password: hashPassword });
+                await teacher.update({ password: hashPassword });
             }
 
             res.status(200).json({
                 message: "Password updated!",
-                student
+                teacher
             })
 
         } catch (error) {
@@ -152,16 +149,16 @@ class StudentController {
     }
 
     forgotPassword = async (req, res, next) => {
-        // 1. Find student
-        const student = await Student.findOne({
+        // 1. Find teacher
+        const teacher = await Teacher.findOne({
             where: { email: req.body.email }
         })
 
-        if (!student) return res.status(404).json({ message: "Student not found!" });
+        if (!teacher) return res.status(404).json({ message: "Teacher not found!" });
 
         // 2. Generate reset token and store to database
         const resetToken = SignToken.generateResetToken();
-        await student.update({
+        await teacher.update({
             resetToken,
             resetTokenExpiry: Date.now() + 900000
         })
@@ -169,14 +166,14 @@ class StudentController {
         // 3. Send the link to reset the password to user's email
         const resetURL = `${req.protocol}://${req.get(
             'host'
-        )}/api/v1/student/reset-password/${resetToken}`;
+        )}/api/v1/teacher/reset-password/${resetToken}`;
     
         const message = `<p>Quên mật khẩu của bạn? Nhập mật khẩu mới và xác nhận mật khẩu tại đường dẫn sau: ${resetURL}\n</p>`;
 
         try {
             await transporter.sendMail({
                 from: 'Study365 system',
-                to: student.email,
+                to: teacher.email,
                 subject: 'LINK TO RESET PASSWORD',
                 html: message
             })
@@ -186,33 +183,33 @@ class StudentController {
             })  
         } catch (error) {
             console.log(error.message);
-            student.resetToken = undefined;
-            student.resetTokenExpiry = undefined;
+            teacher.resetToken = undefined;
+            teacher.resetTokenExpiry = undefined;
         }
     }
 
     resetPassword = async (req, res, next) => {
         try {
-            const student = Student.findOne({
+            const teacher = Teacher.findOne({
                 where: {
                     resetToken: req.params.resetToken,
                     resetTokenExpiry: { $gt: Date.now() }
                 }
             });
     
-            if (!student) return res.status(400).json({ error: "Invalid or expired reset token!" });
+            if (!teacher) return res.status(400).json({ error: "Invalid or expired reset token!" });
     
-            student.password = await bcrypt.hash(req.body.password, 12);
-            student.resetToken = undefined;
-            student.resetTokenExpiry = undefined;
+            teacher.password = await bcrypt.hash(req.body.password, 12);
+            teacher.resetToken = undefined;
+            teacher.resetTokenExpiry = undefined;
     
-            const accessToken = SignToken.signAccessToken(student.id);
-            const refreshToken = SignToken.signRefreshToken(student.id);
+            const accessToken = SignToken.signAccessToken(teacher.id);
+            const refreshToken = SignToken.signRefreshToken(teacher.id);
     
             res.status(200).json({
                 accessToken,
                 refreshToken,
-                student
+                teacher
             })
         } catch (error) {
             console.log(error.message);
@@ -221,4 +218,4 @@ class StudentController {
 
 }
 
-module.exports = new StudentController();
+module.exports = new TeacherController();
