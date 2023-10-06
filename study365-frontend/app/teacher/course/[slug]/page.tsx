@@ -36,10 +36,15 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
         fetchData();
     }, [changeData]);
 
-    function handlerInput(e: FormEvent<HTMLInputElement>, id: string) {
-        setDataForm({ ...dataForm, [id]: { ...dataForm[id], [e.target.name]: e.target.value } })
+    function handlerInput(e: FormEvent<HTMLInputElement>, id: string, file: string = '') {
+        if (file) {
+            setDataForm({ ...dataForm, [id]: { ...dataForm[id], [e.target.name]: e.target.files[0] } })
+        }
+        else
+            setDataForm({ ...dataForm, [id]: { ...dataForm[id], [e.target.name]: e.target.value } })
     }
-    console.log(openModal);
+    // console.log(dataForm);
+
 
     const listChapter = chapterList.map((chapter: object) => {
         const listLecture = chapter.lectures.map((lecture: Object) => {
@@ -529,12 +534,11 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                     </Dialog.Title>
 
                                                     <div className="mt-2 overflow-y-auto no-scrollbar h-80 mb-10">
-                                                        <form onSubmit={async (e) => {
+                                                        <form encType='multipart/form-data' onSubmit={async (e) => {
                                                             e.preventDefault()
                                                             const data = { ...dataForm[`lc-${chapter.id}`], ['id_chapter']: chapter.id }
-                                                            console.log(data);
-
                                                             await lectureApi.create(data)
+                                                            dataForm[`lc-${chapter.id}`] = {}
                                                             setChangeData(!changeData)
                                                         }}>
                                                             <div className="p-5">
@@ -585,6 +589,15 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                                                 />
                                                                             </div>
                                                                         </div>
+                                                                        <div className="sm:col-span-6">
+                                                                            <label htmlFor="name" className="block text-base font-medium leading-6 text-gray-900">
+                                                                                Video bài giảng
+                                                                            </label>
+                                                                            <div className="mb-5 mt-2">
+                                                                                <input className="block w-full bg-white rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6" aria-describedby="file_input_help" name="id_video" id="file_input" type="file" onChange={(e) => handlerInput(e, `lc-${chapter.id}`, 'file')} />
+                                                                            </div>
+                                                                        </div>
+
                                                                         <div className="sm:col-span-3">
                                                                             <label htmlFor="country" className="block text-base font-medium leading-6 text-gray-900">
                                                                                 Trạng thái
@@ -709,6 +722,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                         e.preventDefault()
                                                         const data = { ...dataForm[0], ['id_course']: params.slug }
                                                         await chapterApi.create(data)
+                                                        dataForm[0] = {}
                                                         setChangeData(!changeData)
                                                     }}>
                                                         <div className="p-5">

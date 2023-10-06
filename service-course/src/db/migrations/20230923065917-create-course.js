@@ -73,6 +73,8 @@ module.exports = {
           model: 'Course',
           key: 'id',
         },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       name: {
         type: Sequelize.STRING(255),
@@ -114,9 +116,11 @@ module.exports = {
           model: 'Chapter',
           key: 'id',
         },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       id_video: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1000),
       },
       name: {
         type: Sequelize.STRING(255),

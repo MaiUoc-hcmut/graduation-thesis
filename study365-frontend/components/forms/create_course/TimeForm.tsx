@@ -1,7 +1,8 @@
 import { FormWrapper } from "../FormWrapper"
 
 type TimeData = {
-
+    start_time: Date,
+    end_time: Date
 }
 
 type TimeFormProps = TimeData & {
@@ -9,6 +10,8 @@ type TimeFormProps = TimeData & {
 }
 
 export function TimeForm({
+    start_time,
+    end_time,
     updateFields,
 }: TimeFormProps) {
     return (
@@ -26,7 +29,7 @@ export function TimeForm({
                     Mốc thời gian không cần quá chính xác, nhưng hãy đảm bảo nó giúp ích cho học sinh khi đăng
                     ký khóa học của bạn.</p>
                 <div className="relative max-w-sm">
-                    <input type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Chọn ngày" />
+                    <input type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Chọn ngày" onChange={e => updateFields({ start_time: e.target.value })} />
                 </div>
 
             </div>
@@ -35,7 +38,7 @@ export function TimeForm({
                 <p className="my-2">Là khoảng thời gian mà học sinh dành ra để học khóa học của bạn. Bạn cần ước tính thời gian
                     phù hợp để giúp học sinh kiểm soát tiến độ khi học khóa học của bạn.</p>
                 <div className="relative max-w-sm">
-                    <input type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Chọn ngày" />
+                    <input type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Chọn ngày" onChange={e => updateFields({ end_time: e.target.value })} />
                 </div>
             </div>
         </FormWrapper>

@@ -2,7 +2,7 @@ import { FormWrapper } from "../FormWrapper"
 
 type OverviewData = {
     target: string
-    object: string
+    goal: string
     method: string
 }
 
@@ -12,7 +12,7 @@ type OverviewFormProps = OverviewData & {
 
 export function OverviewForm({
     target,
-    object,
+    goal,
     method,
     updateFields,
 }: OverviewFormProps) {
@@ -30,7 +30,7 @@ export function OverviewForm({
             <div className="mb-5">
                 <p className="text-base font-medium">Đối tượng của khóa học là gì?</p>
                 <p className="mt-2">Nhập ít nhất một đối tượng cho khóa học của bạn.</p>
-                <textarea id="message" value={object} required className="block mt-3 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Ví dụ: Giúp học sinh nắm vững kiến thức toán giải tích và hình học 12" onChange={e => updateFields({ object: e.target.value })}></textarea>
+                <textarea id="message" value={goal} required className="block mt-3 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Ví dụ: Giúp học sinh nắm vững kiến thức toán giải tích và hình học 12" onChange={e => updateFields({ goal: e.target.value })}></textarea>
             </div>
             <div className="mb-5">
                 <p className="text-base font-medium">Phương pháp nào được sử dụng trong khóa học?</p>

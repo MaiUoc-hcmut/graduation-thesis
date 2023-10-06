@@ -1,7 +1,5 @@
 "use client";
 import "@/styles/teacher/index.css";
-// import "./data-tables-css.css";
-// import "@/styles/teacher/satoshi.css";
 import { useState, useEffect } from "react";
 import Loader from "@/components/teacher/common/Loader";
 

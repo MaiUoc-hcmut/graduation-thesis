@@ -1,25 +1,38 @@
 import axiosClient from "./axiosClient";
 
-const productApi = {
+const courseApi = {
     getAll: (params: Object) => {
         const url = '/courses';
         return axiosClient.get(url, { params });
     },
 
-    get: (id: number) => {
+    get: (id: string) => {
         const url = `/courses/${id}`;
         return axiosClient.get(url);
     },
 
-    getFull: (id: number) => {
+    getFull: (id: string) => {
         const url = `/courses/${id}/all`;
         return axiosClient.get(url);
     },
 
-    update: (id: number) => {
+    update: (id: string) => {
         const url = `/courses/${id}`;
         return axiosClient.get(url);
     },
+
+    create: (data: object) => {
+        const url = `/courses`;
+        return axiosClient.post(url, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        });
+    },
+    delete: (id: number) => {
+        const url = `/courses/${id}`;
+        return axiosClient.delete(url);
+    },
 }
 
-export default productApi;
+export default courseApi;
