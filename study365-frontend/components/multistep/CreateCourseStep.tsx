@@ -1,4 +1,5 @@
-/* eslint-disable react/jsx-key */
+'use client'
+
 import { FormEvent, useEffect, useState } from "react"
 import { useMultistepForm } from "./UseMultiStep"
 import { OverviewForm } from "../forms/create_course/OverviewForm"
@@ -7,19 +8,38 @@ import { PriceForm } from "../forms/create_course/PriceForm";
 import { TimeForm } from "../forms/create_course/TimeForm";
 import parse from 'html-react-parser';
 
+import { useRouter } from 'next/navigation'
+import courseApi from "@/app/api/courseApi";
+import { useAppSelector } from '@/redux/store';
 
 type FormData = {
+    name: string
+    subject: string
+    grade: string
+    level: string
     target: string
+    goal: string
     object: string
     method: string
-    title: string
+    price: string
+    start_time: Date
+    end_time: Date
+    thumbnail: File
 }
 
 const INITIAL_DATA: FormData = {
+    name: "",
+    subject: "",
+    grade: "",
+    level: "",
     target: "",
-    object: "",
+    goal: "",
     method: "",
-    title: "",
+    object: "",
+    price: "",
+    start_time: new Date(),
+    end_time: new Date(),
+    thumbnail: new File([], "")
 }
 
 export default function CreateCourseStep() {
@@ -33,7 +53,8 @@ export default function CreateCourseStep() {
     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5" />
 </svg>`
     const [data, setData] = useState(INITIAL_DATA)
-
+    const router = useRouter()
+    const { user } = useAppSelector(state => state.authReducer);
     function setStyle(step: number) {
         return currentStepIndex + 1 == step ? stylePre : (currentStepIndex + 1 > step ? styleCom : styleInit)
     }
@@ -48,21 +69,23 @@ export default function CreateCourseStep() {
     }
     const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
         useMultistepForm([
-            <IntroduceForm {...data} updateFields={updateFields} />,
-            <OverviewForm {...data} updateFields={updateFields} />,
-            <PriceForm {...data} updateFields={updateFields} />,
-            <TimeForm {...data} updateFields={updateFields} />,
+            <IntroduceForm {...data} key={'step1'} updateFields={updateFields} />,
+            <OverviewForm {...data} key={'step2'} updateFields={updateFields} />,
+            <PriceForm {...data} key={'step3'} updateFields={updateFields} />,
+            <TimeForm {...data} key={'step4'} updateFields={updateFields} />,
         ])
 
 
-    function onSubmit(e: FormEvent) {
+    async function onSubmit(e: FormEvent) {
         e.preventDefault()
         if (!isLastStep) return next()
-        alert("Successful Account Creation")
+        setData({ ...data, id_teacher: user.id })
+        await courseApi.create(data)
+        router.push("/teacher/course")
     }
 
     return (
-        <div className="p-5 bg-white shadow-lg">
+        < div className="p-5 bg-white shadow-lg" >
 
             <h3 className="text-center font-semibold text-2xl pb-5">Tạo khóa học</h3>
             <hr className="py-5" />
@@ -108,11 +131,11 @@ export default function CreateCourseStep() {
                         </li>
                     </ol>
                 </div>
-                <form onSubmit={onSubmit} className="flex-1">
+                <form onSubmit={onSubmit} encType='multipart/form-data' className="flex-1">
                     {step}
                     <div className="flex flex-row justify-between my-10">
                         {!isFirstStep && (
-                            <button className="text-white bg-gray-500 hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-600 dark:border-gray-600" type="button" onClick={back}>
+                            <button className="text-white bg-[gray] hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-600 dark:border-gray-600" type="button" onClick={back}>
                                 Back
                             </button>
                         )}
@@ -120,6 +143,9 @@ export default function CreateCourseStep() {
                     </div>
                 </form>
             </div>
-        </div>
+        </ div>
     )
+
 }
+
+

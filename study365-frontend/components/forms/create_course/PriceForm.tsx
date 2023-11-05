@@ -1,7 +1,7 @@
 import { FormWrapper } from "../FormWrapper"
 
 type PriceData = {
-
+    price: string
 }
 
 type PriceFormProps = PriceData & {
@@ -9,6 +9,7 @@ type PriceFormProps = PriceData & {
 }
 
 export function PriceForm({
+    price,
     updateFields,
 }: PriceFormProps) {
     return (
@@ -19,7 +20,7 @@ export function PriceForm({
                     được xét duyệt thành công.
                     <br />
                     Lưu ý: Giá khóa học sẽ theo các bậc giá cố định đã được định sẵn.</p>
-                <input type="number" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="VNĐ" required />
+                <input type="number" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="VNĐ" onChange={e => updateFields({ price: e.target.value })} required />
             </div>
             <div className="mb-5">
                 <h4 className="font-medium text-xl">Khuyến mãi</h4>

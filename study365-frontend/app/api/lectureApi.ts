@@ -11,9 +11,13 @@ const lectureApi = {
         return axiosClient.get(url);
     },
 
-    create: (data: object) => {
+    create: (data: object,) => {
         const url = `/courses/chapters/lectures`;
-        return axiosClient.post(url, { data });
+        return axiosClient.post(url, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        });
     },
 
     update: (data: object, id: number) => {

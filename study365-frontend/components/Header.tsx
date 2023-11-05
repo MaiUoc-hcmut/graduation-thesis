@@ -71,7 +71,7 @@ export default function Header() {
                             <Link href="/">Trang chủ</Link>
                         </li>
                         <li className='py-2 px-4'>
-                            <Link href="/">Khóa học</Link>
+                            <Link href="/course">Khóa học</Link>
                         </li>
                         <li className='py-2 px-4'>
                             <Link href="/">Giáo viên</Link>
