@@ -4,11 +4,15 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('course', {
       id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         unique: true,
         autoIncrement: true,
         primaryKey: true,
+      },
+      id_teacher: {
+        type: Sequelize.INTEGER.UNSIGNED,
+        allowNull: false,
       },
       name: {
         type: Sequelize.STRING(255),
@@ -30,6 +34,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
+      subject: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       object: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -42,7 +50,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      knowledge: Sequelize.STRING,
+      grade: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      level: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       thumbnail: Sequelize.STRING,
       status: {
         type: Sequelize.BOOLEAN,
@@ -60,14 +75,14 @@ module.exports = {
     });
     await queryInterface.createTable('chapter', {
       id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         unique: true,
         autoIncrement: true,
         primaryKey: true,
       },
       id_course: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
           model: 'Course',
@@ -82,6 +97,10 @@ module.exports = {
       },
       description: {
         type: Sequelize.STRING,
+      },
+      order: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       order: {
         type: Sequelize.INTEGER,
@@ -103,14 +122,14 @@ module.exports = {
     });
     await queryInterface.createTable('lecture', {
       id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         unique: true,
         autoIncrement: true,
         primaryKey: true,
       },
       id_chapter: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
           model: 'Chapter',
@@ -129,8 +148,8 @@ module.exports = {
       description: {
         type: Sequelize.STRING,
       },
-      time: {
-        type: Sequelize.TIME,
+      duration: {
+        type: Sequelize.BIGINT,
       },
       order: {
         type: Sequelize.INTEGER,
@@ -153,18 +172,12 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-<<<<<<< HEAD
     await queryInterface.dropTable('lecture');
     await queryInterface.dropTable('chapter');
     await queryInterface.dropTable('course');
-=======
-    // await queryInterface.dropTable('lectures');
-    // await queryInterface.dropTable('chapters');
-    // await queryInterface.dropTable('courses');
     // await queryInterface.dropTable('documents');
     // await queryInterface.dropTable('categories');
-    await queryInterface.dropTable('documentlecture');
+    // await queryInterface.dropTable('documentlecture');
     // await queryInterface.dropTable('documentcategory');
->>>>>>> 2adc35cd1bfe891dd5cada2164a47ab460c70cbe
   },
 };

@@ -1,5 +1,4 @@
 const Course = require('../../db/models/course');
-const Chapter = require('../../db/models/chapter');
 import { Request, Response, NextFunction } from 'express';
 
 const fileUpload = require('../../config/firebase/fileUpload.js');
@@ -27,9 +26,20 @@ class CourseController {
 
   // [GET] /courses
   getAllCourse(req: Request, res: Response, next: NextFunction) {
-    Course.findAll()
-      .then((course: any) => res.send(course))
-      .catch(next);
+    if (req.query.id_teacher) {
+      Course.findAll({
+        where: {
+          id_teacher: req.query.id_teacher
+        }
+      })
+        .then((course: any) => res.send(course))
+        .catch(next);
+    }
+    else {
+      Course.findAll()
+        .then((course: any) => res.send(course))
+        .catch(next);
+    }
   }
 
   // [GET] /courses/all

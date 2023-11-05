@@ -1,6 +1,11 @@
 import axiosClient from "./axiosClient";
 
 const courseApi = {
+    getAllByTeacher: (params: Object) => {
+        const url = '/courses';
+        return axiosClient.get(url, { params });
+    },
+
     getAll: (params: Object) => {
         const url = '/courses';
         return axiosClient.get(url, { params });

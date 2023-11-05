@@ -4,7 +4,7 @@ import courseApi from "@/app/api/courseApi"
 import Image from "next/image"
 import Link from "next/link"
 import { Fragment, useRef, useState, useEffect } from 'react'
-
+import { useAppSelector } from '@/redux/store';
 import { PencilIcon } from '@heroicons/react/24/solid'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
@@ -13,10 +13,11 @@ import { Dialog, Transition } from '@headlessui/react'
 export default function OverviewCourse() {
     const [courseList, setCourseList] = useState([])
     const [openModal, setOpenModal] = useState({})
+    const { user } = useAppSelector(state => state.authReducer);
     useEffect(() => {
         const fetchCourseList = async () => {
             try {
-                const response = await courseApi.getAll({});
+                const response = await courseApi.getAllByTeacher({ id_teacher: user.id });
                 setCourseList(response);
             } catch (error) {
                 console.log('Failed to fetch course list: ', error);

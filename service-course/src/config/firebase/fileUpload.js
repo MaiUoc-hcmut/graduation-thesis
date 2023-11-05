@@ -5,6 +5,9 @@ class FileUpload {
     'thumbnail'
   );
   uploadVideo = multer({ storage: multer.memoryStorage() }).single('id_video');
+
+  uploadImageComment = multer({ storage: multer.memoryStorage() }).single('image');
+  
   giveCurrentDateTime = () => {
     const today = new Date();
     const date =

@@ -10,7 +10,7 @@ import parse from 'html-react-parser';
 
 import { useRouter } from 'next/navigation'
 import courseApi from "@/app/api/courseApi";
-
+import { useAppSelector } from '@/redux/store';
 
 type FormData = {
     name: string
@@ -19,6 +19,7 @@ type FormData = {
     level: string
     target: string
     goal: string
+    object: string
     method: string
     price: string
     start_time: Date
@@ -34,6 +35,7 @@ const INITIAL_DATA: FormData = {
     target: "",
     goal: "",
     method: "",
+    object: "",
     price: "",
     start_time: new Date(),
     end_time: new Date(),
@@ -52,6 +54,7 @@ export default function CreateCourseStep() {
 </svg>`
     const [data, setData] = useState(INITIAL_DATA)
     const router = useRouter()
+    const { user } = useAppSelector(state => state.authReducer);
     function setStyle(step: number) {
         return currentStepIndex + 1 == step ? stylePre : (currentStepIndex + 1 > step ? styleCom : styleInit)
     }
@@ -76,7 +79,7 @@ export default function CreateCourseStep() {
     async function onSubmit(e: FormEvent) {
         e.preventDefault()
         if (!isLastStep) return next()
-
+        setData({ ...data, id_teacher: user.id })
         await courseApi.create(data)
         router.push("/teacher/course")
     }

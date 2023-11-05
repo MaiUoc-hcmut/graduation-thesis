@@ -1,10 +1,51 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { BookOpenIcon } from '@heroicons/react/24/solid'
-import { RectangleStackIcon } from '@heroicons/react/24/solid'
+import courseApi from '@/app/api/courseApi'
 
 export default function ListCourse() {
+    const [courseList, setCourseList] = useState([])
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const courses = await courseApi.getAll({})
+                setCourseList(courses)
+            } catch (error) {
+                console.log('Failed to fetch: ', error);
+            }
+        }
+
+        fetchData();
+    }, []);
+    const listCourseDisplay = courseList.map((course: object) => {
+        return (
+            <div key={course.id} className='bg-slate-50 p-3 rounded-lg'>
+                <div className='flex'>
+                    <div>
+                        <Image
+                            width={100}
+                            height={100}
+                            src={`${course.thumbnail}`}
+                            alt="avatar"
+                        />
+                    </div>
+                    <div className='flex flex-col mx-5'>
+                        <div className=''>
+                            <p className='font-medium text-lg text-[#0043a8]'>{course.name}</p>
+                            <p className='font-medium'>Thầy Nguyễn Văn A</p>
+                        </div>
+                        <div className='mt-2'>
+                            <Link href={`/course/${course.id}`}>
+                                <button type="button" className="text-[#008a00] bg-white border border-[#008a00] focus:outline-none hover:bg-[#008a0096] font-medium rounded-xl text-sm px-5 py-2 mr-2 mb-2">Xem ngay</button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    })
+
     return (
         <div className='mx-12 mt-10'>
             <div className="flex flex-row justify-between items-center mt-5">
@@ -38,79 +79,7 @@ export default function ListCourse() {
             </div>
             <div className='mt-10'>
                 <div className='grid grid-cols-2 gap-4 gap-x-10'>
-                    <div className='bg-slate-50 p-3 rounded-lg'>
-                        <div className='flex'>
-                            <div>
-                                <Image
-                                    width={100}
-                                    height={100}
-                                    src="/avatar.png"
-                                    alt="avatar"
-                                />
-                            </div>
-                            <div className='flex flex-col mx-5'>
-                                <div className=''>
-                                    <p className='font-medium text-lg text-[#0043a8]'>Khóa học: Toán cao cấp 12</p>
-                                    <p className='font-medium'>Thầy Nguyễn Văn A</p>
-                                    <div className='flex font-normal items-center'>
-                                        <div className='flex items-center mr-2'>
-                                            <RectangleStackIcon className='w-5 h-5 text-blue-900' />
-                                            <p>10 chương</p>
-                                        </div>
-                                        <div className='flex items-center'>
-                                            <BookOpenIcon className='w-5 h-5 text-blue-900' />
-                                            <p className=''>120 bài giảng</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='mt-2'>
-                                    <button type="button" className="text-[#008a00] bg-white border border-[#008a00] focus:outline-none hover:bg-[#008a0096] font-medium rounded-xl text-sm px-5 py-2 mr-2 mb-2">Xem ngay</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='bg-slate-50 p-3 rounded-lg'>
-                        <div className='flex'>
-                            <div>
-                                <Image
-                                    width={100}
-                                    height={100}
-                                    src="/avatar.png"
-                                    alt="avatar"
-                                />
-                            </div>
-                            <div className='flex flex-col mx-5'>
-                                <div className=''>
-                                    <p className='font-medium text-lg text-[#0043a8]'>Khóa học: Toán cao cấp 12</p>
-                                    <p className='font-medium'>Thầy Nguyễn Văn A</p>
-                                </div>
-                                <div className='mt-2'>
-                                    <button type="button" className="text-[#008a00] bg-white border border-[#008a00] focus:outline-none hover:bg-[#008a0096] font-medium rounded-xl text-sm px-5 py-2 mr-2 mb-2">Xem ngay</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='bg-slate-50 p-3 rounded-lg'>
-                        <div className='flex'>
-                            <div>
-                                <Image
-                                    width={100}
-                                    height={100}
-                                    src="/avatar.png"
-                                    alt="avatar"
-                                />
-                            </div>
-                            <div className='flex flex-col mx-5'>
-                                <div className=''>
-                                    <p className='font-medium text-lg text-[#0043a8]'>Khóa học: Toán cao cấp 12</p>
-                                    <p className='font-medium'>Thầy Nguyễn Văn A</p>
-                                </div>
-                                <div className='mt-2'>
-                                    <button type="button" className="text-[#008a00] bg-white border border-[#008a00] focus:outline-none hover:bg-[#008a0096] font-medium rounded-xl text-sm px-5 py-2 mr-2 mb-2">Xem ngay</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {listCourseDisplay}
                 </div>
             </div>
         </div>

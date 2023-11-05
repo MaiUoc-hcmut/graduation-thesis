@@ -16,6 +16,10 @@ Course.init(
       autoIncrement: true,
       primaryKey: true,
     },
+    id_teacher: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -52,12 +56,16 @@ Course.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    object: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     method: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    knowledge: DataTypes.STRING,
     thumbnail: DataTypes.STRING,
+
     status: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

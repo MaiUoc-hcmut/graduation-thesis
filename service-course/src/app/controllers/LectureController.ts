@@ -1,8 +1,8 @@
 const Lecture = require('../../db/models/lecture')
 const Chapter = require('../../db/models/chapter')
 import { Request, Response, NextFunction } from "express";
-// import Queue from 'queue'
-// const q = new Queue({ results: [] })
+const { getVideoDurationInSeconds } = require('get-video-duration')
+
 
 const fileUpload = require('../../config/firebase/fileUpload.js');
 const { firebaseConfig } = require('../../config/firebase/firebase');
@@ -37,19 +37,6 @@ class LectureController {
     async create(req: Request, res: Response, next: NextFunction) {
         let data = req.body;
         const file = req.file
-        console.log(file);
-
-        // q.push(() => {
-        //     return new Promise((resolve, reject) => {
-        //         // Upload the file in the bucket storage
-        //         const snapshot = uploadBytesResumable(
-        //             storageRef,
-        //             file?.buffer,
-        //             metadata
-        //         );
-        //         resolve(snapshot)
-        //     })
-        // })
 
         const dateTime = fileUpload.giveCurrentDateTime();
 
@@ -63,26 +50,31 @@ class LectureController {
             contentType: file?.mimetype,
         };
 
-        const snapshot = uploadBytesResumable(
+        // Upload the file in the bucket storage
+        const snapshot = await uploadBytesResumable(
             storageRef,
             file?.buffer,
             metadata
         );
 
-        console.log(snapshot);
+        // Grab the public url
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        getVideoDurationInSeconds(
+            downloadURL
+        ).then((duration: any) => {
+            duration = Math.floor(duration)
+            data = { ...data, id_video: downloadURL, duration: duration };
+            const lecture = Lecture.build(data);
 
-        // // Grab the public url
-        // const downloadURL = await getDownloadURL(snapshot.ref);
+            lecture
+                .save()
+                .then((lecture: any) => {
+                    res.send(lecture)
+                })
+                .catch(next);
 
-        // data = { ...data, id_video: downloadURL };
+        })
 
-        // const lecture = Lecture.build(data);
-        // lecture
-        //     .save()
-        //     .then((lecture: any) => {
-        //         res.send(lecture)
-        //     })
-        //     .catch(next);
     }
 
     // [PUT] /lectures/:id
