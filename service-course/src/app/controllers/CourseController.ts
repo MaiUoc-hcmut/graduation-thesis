@@ -1,4 +1,6 @@
 const Course = require('../../db/models/course');
+const Chapter = require('../../db/models/chapter');
+const Lecture = require('../../db/models/lecture');
 import { Request, Response, NextFunction } from 'express';
 
 const fileUpload = require('../../config/firebase/fileUpload.js');
@@ -52,36 +54,58 @@ class CourseController {
   // [POST] /courses/create
   async create(req: Request, res: Response, next: NextFunction) {
     let data = req.body;
+
     const file = req.file
+    if (file) {
+      const dateTime = fileUpload.giveCurrentDateTime();
 
-    const dateTime = fileUpload.giveCurrentDateTime();
+      const storageRef = ref(
+        storage,
+        `thumbnails/${file?.originalname + '       ' + dateTime}`
+      );
 
-    const storageRef = ref(
-      storage,
-      `thumbnails/${file?.originalname + '       ' + dateTime}`
-    );
+      // Create file metadata including the content type
+      const metadata = {
+        contentType: file?.mimetype,
+      };
 
-    // Create file metadata including the content type
-    const metadata = {
-      contentType: file?.mimetype,
-    };
+      // Upload the file in the bucket storage
+      const snapshot = await uploadBytesResumable(
+        storageRef,
+        file?.buffer,
+        metadata
+      );
 
-    // Upload the file in the bucket storage
-    const snapshot = await uploadBytesResumable(
-      storageRef,
-      file?.buffer,
-      metadata
-    );
+      // Grab the public url
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // Grab the public url
-    const downloadURL = await getDownloadURL(snapshot.ref);
+      data = { ...data, thumbnail: downloadURL };
+    }
 
-    data = { ...data, thumbnail: downloadURL };
 
     const course = Course.build(data);
+    const chapters = data.chapters
     course
       .save()
-      .then(() => res.send(course))
+      .then((course: any) => {
+        for (const chapter of chapters) {
+          const dataChapter = { ...chapter, id_course: course.id }
+          const chap = Chapter.build(dataChapter);
+          chap
+            .save()
+            .then(async (c: any) => {
+              const lectures = chapter.lectures
+              for (const lecture of lectures) {
+                const dataLecture = { ...lecture, id_chapter: c.id }
+                const lec = Lecture.build(dataLecture);
+
+                lec.save()
+              }
+            })
+            .catch(next);
+        }
+        res.send(course)
+      })
       .catch(next);
   }
 

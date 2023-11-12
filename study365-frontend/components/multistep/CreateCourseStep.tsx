@@ -25,6 +25,7 @@ type FormData = {
     start_time: Date
     end_time: Date
     thumbnail: File
+    chapters: Object
 }
 
 const INITIAL_DATA: FormData = {
@@ -39,7 +40,8 @@ const INITIAL_DATA: FormData = {
     price: "",
     start_time: new Date(),
     end_time: new Date(),
-    thumbnail: new File([], "")
+    thumbnail: new File([], ""),
+    chapters: {}
 }
 
 export default function CreateCourseStep() {
@@ -69,10 +71,10 @@ export default function CreateCourseStep() {
     }
     const { steps, currentStepIndex, step, isFirstStep, isLastStep, back, next } =
         useMultistepForm([
+            <TimeForm {...data} key={'step4'} updateFields={updateFields} />,
             <IntroduceForm {...data} key={'step1'} updateFields={updateFields} />,
             <OverviewForm {...data} key={'step2'} updateFields={updateFields} />,
             <PriceForm {...data} key={'step3'} updateFields={updateFields} />,
-            <TimeForm {...data} key={'step4'} updateFields={updateFields} />,
         ])
 
 
@@ -83,6 +85,8 @@ export default function CreateCourseStep() {
         await courseApi.create(data)
         router.push("/teacher/course")
     }
+    console.log(data);
+
 
     return (
         < div className="p-5 bg-white shadow-lg" >
