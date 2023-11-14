@@ -1,74 +1,115 @@
-const Exam = require('../../db/models/exam');
-import { Request, Response, NextFunction } from 'express';
+const Exam = require("../../db/models/exam");
+const Exam_Question = require('../../db/models/exam_question');
+import axios from "axios";
+import { Request, Response, NextFunction } from "express";
 
 class ExamController {
-  getExam(req: Request, res: Response, next: NextFunction) {
-    const id = req.params.id;
-    Exam.findByPk(id)
-      .then((exam: any) => res.send(exam))
-      .catch(next);
-  }
+    getExamById = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = req.params.id;
+        
+            const exam = await Exam.findByPk(id);
+            if (!exam) return res.status(404).json({ message: "Exam not found!" });
 
-  getAllExam(req: Request, res: Response, next: NextFunction) {
-    if (req.query.id_teacher) {
-      Exam.findAll({
-        where: {
-          id_teacher: req.query.id_teacher
+            res.status(200).json(exam);
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
         }
-      })
-        .then((exam: any) => res.send(exam))
-        .catch(next);
     }
-    else {
-      Exam.findAll()
-        .then((exam: any) => res.send(exam))
-        .catch(next);
+
+    getExamsCreatedByTeacher = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id_teacher = req.teacher.data.id;
+
+            const exams = await Exam.findAll({
+                where: { id_teacher }
+            });
+
+            res.status(exams);
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
     }
-  }
 
-  getAllExamFull(req: Request, res: Response, next: NextFunction) {
-    Exam.findByPk(req.params.id, { include: ['chapters'] })
-      .then((exam: any) => res.send(exam))
-      .catch(next);
-  }
+    // [GET] /api/v1/exam/question/:questionId
+    getExamsContainQuestion = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { questionId } = req.params;
 
+            const examIds = await Exam_Question.findAll({
+                where: { id_question: questionId },
+                attributes: ['id_exam']
+            });
 
-  async create(req: Request, res: Response, next: NextFunction) {
-    const data = req.body
-    const exam = Exam.build(data);
+            let exams: any[] = [];
 
-    console.log(exam);
+            examIds.map(async (id: number) => {
+                const exam = await Exam.findByPk(id);
+                exams.push(exam);
+            })
 
-    exam
-      .save()
-      .then((exam: any) => {
-        res.send(exam)
-      })
-      .catch(next);
+            res.status(200).json({ data: exams });
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
+    }
 
-  }
+    // [POST] /api/v1/exam/create
+    createExam = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const id_teacher = req.teacher.data.id;
+            
+            const { courseId, categories, ...body} = req.body;
 
-  update(req: Request, res: Response, next: NextFunction) {
-    Exam.update(req.body.data, {
-      where: {
-        id: req.params.id,
-      },
-    })
-      .then((exam: any) => res.send(exam))
-      .catch(next);
-  }
+            body.id_teacher = id_teacher;
 
+            const newExam = await Exam.create({ ...body });
 
-  delete(req: Request, res: Response, next: NextFunction) {
-    Exam.destroy({
-      where: {
-        id: req.params.id,
-      },
-    })
-      .then(res.send({}))
-      .catch(next);
-  }
+            if (courseId) {
+                await axios.post(
+                    'http://localhost:3001/api/v1/course/insert/jointable/course-exam',
+                    {
+                        id_course: courseId,
+                        id_exam: newExam.id
+                    }
+                )
+            }
 
+            res.status(201).json(newExam);
+
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    deleteExam = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { examId } = req.params;
+            const id_teacher = req.teacher.data.id;
+
+            const exam = await Exam.findByPk(examId);
+
+            if (!exam) return res.status(404).json({ message: "Exam not found!" });
+
+            if (id_teacher != exam.id_teacher) 
+                return res.status(401).json({ message: "You do not have permission to do this action!" });
+
+            await exam.destroy();
+
+            res.status(200).json({
+                message: "Exam has been deleted",
+                examId
+            });
+
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new ExamController();

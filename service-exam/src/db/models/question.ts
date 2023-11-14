@@ -1,6 +1,7 @@
 
 const { sequelize } = require('../../config/db');
 import { Model, DataTypes, CreationOptional } from 'sequelize';
+const Answer = require('./answer');
 
 class Question extends Model {
   declare createdAt: CreationOptional<Date>;
@@ -52,6 +53,12 @@ Question.init(
     sequelize,
   },
 );
+
+Question.belongsToMany(Answer, {
+  through: 'QuestionAnswer',
+  foreignKey: 'id_question',
+  otherKey: 'id_answer'
+})
 
 
 module.exports = Question

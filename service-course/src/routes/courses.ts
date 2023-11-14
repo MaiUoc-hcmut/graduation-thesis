@@ -14,6 +14,7 @@ router.delete("/:id", courseController.delete);
 router.post("/", fileUpload.uploadThumbnail, courseController.create);
 router.get("/:id", courseController.getCourse);
 router.get("/", courseController.getAllCourse);
+router.post('/insert/jointable/course-exam', courseController.insertJoinTableCourseExam);
 
 
 

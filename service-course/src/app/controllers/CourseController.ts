@@ -1,4 +1,5 @@
 const Course = require('../../db/models/course');
+const CourseExam = require('../../db/models/course-exam');
 import { Request, Response, NextFunction } from 'express';
 
 const fileUpload = require('../../config/firebase/fileUpload.js');
@@ -105,6 +106,18 @@ class CourseController {
     })
       .then(res.send({}))
       .catch(next);
+  }
+
+  // [POST] /course/insert/jointable/course-exam
+  insertJoinTableCourseExam(req: Request, res: Response, next: NextFunction) {
+    CourseExam.create({
+      id_course: req.body.id_course,
+      id_exam: req.body.id_exam
+    })
+    .then((rec: any) => {
+      res.status(201).send({rec})
+    })
+    .catch(next);
   }
 
 }
