@@ -21,11 +21,10 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
     const [chapterList, setChapterList] = useState([])
     const [changeData, setChangeData] = useState(false)
     useEffect(() => {
-        const fetchChapterList = async () => {
+        const fetchData = async () => {
             try {
                 const chapter = await chapterApi.getFull({ 'id_course': params.slug });
                 const course = await courseApi.getFull(params.slug)
-                console.log(chapter);
 
                 setCourse(course)
                 setChapterList(chapter);
@@ -34,20 +33,25 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
             }
         }
 
-        fetchChapterList();
+        fetchData();
     }, [changeData]);
 
-    function handlerInput(e: FormEvent<HTMLInputElement>, id: number) {
-        setDataForm({ ...dataForm, [id]: { ...dataForm[id], [e.target.name]: e.target.value } })
+    function handlerInput(e: FormEvent<HTMLInputElement>, id: string, file: string = '') {
+        if (file) {
+            setDataForm({ ...dataForm, [id]: { ...dataForm[id], [e.target.name]: e.target.files[0] } })
+        }
+        else
+            setDataForm({ ...dataForm, [id]: { ...dataForm[id], [e.target.name]: e.target.value } })
     }
+    // console.log(dataForm);
+
 
     const listChapter = chapterList.map((chapter: object) => {
         const listLecture = chapter.lectures.map((lecture: Object) => {
             return (
-
                 <div key={lecture.id} >
                     {/* Modal delete lecture */}
-                    < Transition.Root show={openModal[`btn-ld${chapter.id}`] ? true : false} as={Fragment}>
+                    < Transition.Root show={openModal[`btn-ld${lecture.id}`] ? true : false} as={Fragment}>
                         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenModal}>
                             <Transition.Child
                                 as={Fragment}
@@ -118,7 +122,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                         </Dialog>
                     </ Transition.Root>
                     {/* Modal update lecture */}
-                    < Transition.Root show={openModal[`btn-l${chapter.id}`] ? true : false} as={Fragment}>
+                    < Transition.Root show={openModal[`btn-l${lecture.id}`] ? true : false} as={Fragment}>
                         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenModal}>
                             <Transition.Child
                                 as={Fragment}
@@ -154,7 +158,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                         <div className="mt-2 overflow-y-auto no-scrollbar h-80 mb-10">
                                                             <form onSubmit={async (e) => {
                                                                 e.preventDefault()
-                                                                const data = { ...lecture, ...dataForm[lecture.id] }
+                                                                const data = { ...lecture, ...dataForm[`l-${lecture.id}`] }
                                                                 delete data['createdAt']
                                                                 delete data['updatedAt']
                                                                 await lectureApi.update(data, lecture.id)
@@ -265,10 +269,10 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                     <div className={`mb-2 border-[1px] border-slate-400 rounded-lg w-full p-5 flex flex-row items-center`}>
                         <p className='w-11/12 overflow-hidden px-2'><span className="pr-2 font-medium">Bài giảng 1:</span>{lecture.name}</p>
                         <div className='ml-5 flex flex-row'>
-                            <button type='button' onClick={() => setOpenModal({ [`btn-l${chapter.id}`]: true })}>
+                            <button type='button' onClick={() => setOpenModal({ [`btn-l${lecture.id}`]: true })}>
                                 <PencilIcon className='w-5 h-5 mr-2 text-blue-600' />
                             </button>
-                            <button type='button' onClick={() => setOpenModal({ [`btn-ld${chapter.id}`]: true })}>
+                            <button type='button' onClick={() => setOpenModal({ [`btn-ld${lecture.id}`]: true })}>
                                 <TrashIcon className='w-5 h-5 text-red-600' />
                             </button>
                         </div>
@@ -530,10 +534,11 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                     </Dialog.Title>
 
                                                     <div className="mt-2 overflow-y-auto no-scrollbar h-80 mb-10">
-                                                        <form onSubmit={async (e) => {
+                                                        <form encType='multipart/form-data' onSubmit={async (e) => {
                                                             e.preventDefault()
-                                                            const data = { ...dataForm[chapter.id], ['id_chapter']: chapter.id }
+                                                            const data = { ...dataForm[`lc-${chapter.id}`], ['id_chapter']: chapter.id }
                                                             await lectureApi.create(data)
+                                                            dataForm[`lc-${chapter.id}`] = {}
                                                             setChangeData(!changeData)
                                                         }}>
                                                             <div className="p-5">
@@ -545,7 +550,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                                             </label>
                                                                             <div className="mt-2">
                                                                                 <input
-                                                                                    onChange={(e) => handlerInput(e, chapter.id)}
+                                                                                    onChange={(e) => handlerInput(e, `lc-${chapter.id}`)}
                                                                                     type="text"
                                                                                     name="name"
                                                                                     id="name"
@@ -560,7 +565,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                                             </label>
                                                                             <div className="mt-2">
                                                                                 <input
-                                                                                    onChange={(e) => handlerInput(e, chapter.id)}
+                                                                                    onChange={(e) => handlerInput(e, `lc-${chapter.id}`)}
                                                                                     type="text"
                                                                                     name="description"
                                                                                     id="description"
@@ -575,7 +580,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                                             </label>
                                                                             <div className="mt-2">
                                                                                 <input
-                                                                                    onChange={(e) => handlerInput(e, chapter.id)}
+                                                                                    onChange={(e) => handlerInput(e, `lc-${chapter.id}`)}
                                                                                     type="number"
                                                                                     name="order"
                                                                                     id="order"
@@ -584,13 +589,22 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                                                 />
                                                                             </div>
                                                                         </div>
+                                                                        <div className="sm:col-span-6">
+                                                                            <label htmlFor="name" className="block text-base font-medium leading-6 text-gray-900">
+                                                                                Video bài giảng
+                                                                            </label>
+                                                                            <div className="mb-5 mt-2">
+                                                                                <input className="block w-full bg-white rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6" aria-describedby="file_input_help" name="id_video" id="file_input" type="file" onChange={(e) => handlerInput(e, `lc-${chapter.id}`, 'file')} />
+                                                                            </div>
+                                                                        </div>
+
                                                                         <div className="sm:col-span-3">
                                                                             <label htmlFor="country" className="block text-base font-medium leading-6 text-gray-900">
                                                                                 Trạng thái
                                                                             </label>
                                                                             <div className="mt-2">
                                                                                 <select
-                                                                                    onChange={(e) => handlerInput(e, chapter.id)}
+                                                                                    onChange={(e) => handlerInput(e, `lc-${chapter.id}`)}
                                                                                     id="status"
                                                                                     name="status"
                                                                                     autoComplete="country-name"
@@ -708,6 +722,7 @@ export default function DetailCourse({ params }: { params: { slug: string } }) {
                                                         e.preventDefault()
                                                         const data = { ...dataForm[0], ['id_course']: params.slug }
                                                         await chapterApi.create(data)
+                                                        dataForm[0] = {}
                                                         setChangeData(!changeData)
                                                     }}>
                                                         <div className="p-5">

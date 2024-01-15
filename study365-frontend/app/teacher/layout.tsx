@@ -5,17 +5,16 @@ import "@/styles/teacher/index.css";
 import { useState, useEffect } from "react";
 import Loader from "@/components/teacher/common/Loader";
 
+import { ReduxProvider } from '@/redux/provider';
 import Sidebar from "@/components/teacher/Sidebar";
 import Header from "@/components/teacher/Header";
-
-import { ReduxProvider } from '@/redux/provider';
 
 export default function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const [loading, setLoading] = useState<boolean>(true);

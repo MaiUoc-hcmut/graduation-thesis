@@ -1,43 +1,291 @@
+import { useState } from "react"
 import { FormWrapper } from "../FormWrapper"
+import { PencilIcon } from '@heroicons/react/24/solid'
+import { TrashIcon } from '@heroicons/react/24/solid'
 
-type TimeData = {
-
+type ContentData = {
+    chapters: Object;
 }
 
-type TimeFormProps = TimeData & {
-    updateFields: (fields: Partial<TimeData>) => void
+type TimeFormProps = ContentData & {
+    updateFields: (fields: Partial<ContentData>) => void
 }
 
 export function TimeForm({
+    chapters,
     updateFields,
 }: TimeFormProps) {
+
+    const [openForm, setOpenForm] = useState({})
+    const [formData, setFormData] = useState([])
+    const [formD, setFormD] = useState({})
+
     return (
         <FormWrapper title="">
-            <div className="mb-5">
-                <h4 className="font-medium text-xl">Thời gian phù hợp</h4>
-                <p className="my-2">Hãy cho học sinh biết thời gian phù hợp nhất để đăng ký và hoàn thành khóa học, ngoài ra còn
-                    là khoảng thời gian nên dành ra để học.
-                    <br />
-                    Điều này sẽ giúp khóa học của bạn trở nên có ích hơn đối với học sinh.</p>
-            </div>
-            <div className="mb-5">
-                <p className="text-base font-medium">Thời gian hoàn thành khóa học</p>
-                <p className="my-2">Là thời gian phù hợp để hoàn thành khóa học tùy theo mục tiêu mà bạn đã đề ra cho khóa học.
-                    Mốc thời gian không cần quá chính xác, nhưng hãy đảm bảo nó giúp ích cho học sinh khi đăng
-                    ký khóa học của bạn.</p>
-                <div className="relative max-w-sm">
-                    <input type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Chọn ngày" />
-                </div>
+            <div>
+                <div className="">
+                    {
+                        formData.map((chapter, index) => {
+                            return (
+                                <div key={index} className="border-[1px] border-slate-400 py-2 px-5 mb-5">
+                                    <div className={`flex ${openForm[`c${index}`] ? 'hidden' : ''}`}>
+                                        <p className="text-lg"><span className=" font-medium">Chương {index + 1}:</span> {chapter.name}</p>
+                                        <div className='ml-5 flex flex-row'>
+                                            <button type='button' onClick={() => {
+                                                setFormD(formData[index])
+                                                setOpenForm({ [`c${index}`]: true })
+                                            }}>
+                                                <PencilIcon className='w-5 h-5 mr-2 text-blue-600' />
+                                            </button>
+                                            <button type='button' onClick={() => setOpenModal({ [`btn-ld${lecture.id}`]: true })}>
+                                                <TrashIcon className='w-5 h-5 text-red-600' />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className={`${openForm[`c${index}`] ? '' : 'hidden'} bg-white border-[1px] py-2 px-5`}>
 
-            </div>
-            <div className="mb-5">
-                <p className="text-base font-medium">Thời gian dành cho khóa học</p>
-                <p className="my-2">Là khoảng thời gian mà học sinh dành ra để học khóa học của bạn. Bạn cần ước tính thời gian
-                    phù hợp để giúp học sinh kiểm soát tiến độ khi học khóa học của bạn.</p>
-                <div className="relative max-w-sm">
-                    <input type="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Chọn ngày" />
+                                        <p className="text-xl font-medium">Sửa chương</p>
+                                        <div className="p-2">
+                                            <div className="text-left">
+                                                <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                                                    <div className="sm:col-span-6">
+                                                        <label htmlFor="name" className="block text-base font-medium leading-6 text-gray-900">
+                                                            Tên chương
+                                                        </label>
+                                                        <div className="mt-2">
+                                                            <input
+                                                                onChange={e => {
+                                                                    setFormD({ ...formD, name: e.target.value })
+                                                                }}
+                                                                type="text"
+                                                                name="name"
+                                                                id="name"
+                                                                value={formD.name}
+                                                                autoComplete="given-name"
+                                                                className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="sm:col-span-3">
+                                                        <label htmlFor="country" className="block text-base font-medium leading-6 text-gray-900">
+                                                            Trạng thái
+                                                        </label>
+                                                        <div className="mt-2">
+                                                            <select
+                                                                onChange={(e) => handlerInput(e, 0)}
+                                                                id="status"
+                                                                name="status"
+                                                                autoComplete="country-name"
+                                                                className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+                                                            >
+                                                                <option value={true}>Công khai</option>
+                                                                <option value={false}>Riêng tư</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="bg-gray-100 py-3 sm:flex sm:flex-row-reverse">
+                                                    <button
+                                                        type="submit"
+                                                        className="inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            setOpenForm({ [`c${index}`]: false })
+                                                            formData[index] = formD
+                                                            setFormD({})
+                                                            setFormData([...formData])
+                                                        }}
+                                                    >
+                                                        Thêm
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="mt-3 inline-flex w-full justify-center rounded-md text-white bg-red-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                                        onClick={() => {
+                                                            setOpenForm({ [`c${index}`]: false })
+                                                        }}
+                                                    >
+                                                        Hủy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    {
+                                        chapter.lectures.map((lecture: object, idxl) => {
+                                            return (
+                                                <div key={idxl} className="border-[1px] bg-white border-slate-400 py-2 px-5 ml-10 mt-5">
+                                                    <p><span className="font-medium">Bài giảng {idxl + 1}: </span>{lecture.name}</p>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                    <button type="button" className="mt-5 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        onClick={() => {
+                                            setOpenForm({ [`create-lecture${index}`]: true })
+                                            setFormD({ "name": "" })
+                                        }}>Thêm bài giảng</button>
+
+                                    <div className={`${openForm[`create-lecture${index}`] ? '' : 'hidden'} mt-5 bg-white border-[1px] py-2 px-5`}>
+
+                                        <p className="text-xl font-medium">Bài giảng mới</p>
+                                        <div className="p-2">
+                                            <div className="text-left">
+                                                <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                                                    <div className="sm:col-span-6">
+                                                        <label htmlFor="name" className="block text-base font-medium leading-6 text-gray-900">
+                                                            Tên bài giảng
+                                                        </label>
+                                                        <div className="mt-2">
+                                                            <input
+                                                                onChange={e => {
+                                                                    setFormD({ ...formD, name: e.target.value })
+                                                                }}
+                                                                type="text"
+                                                                name="name"
+                                                                id="name"
+                                                                value={formD.name}
+                                                                autoComplete="given-name"
+                                                                className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="sm:col-span-3">
+                                                        <label htmlFor="country" className="block text-base font-medium leading-6 text-gray-900">
+                                                            Trạng thái
+                                                        </label>
+                                                        <div className="mt-2">
+                                                            <select
+                                                                onChange={(e) => handlerInput(e, 0)}
+                                                                id="status"
+                                                                name="status"
+                                                                autoComplete="country-name"
+                                                                className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+                                                            >
+                                                                <option value={true}>Công khai</option>
+                                                                <option value={false}>Riêng tư</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="bg-gray-100 py-3 sm:flex sm:flex-row-reverse">
+                                                    <button
+                                                        type="submit"
+                                                        className="inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            setOpenForm({ [`create-lecture${index}`]: false })
+                                                            formData[index].lectures.push(formD)
+                                                            setFormData(formData)
+                                                            console.log(formData);
+                                                            updateFields({ chapters: formData })
+                                                        }}
+                                                    >
+                                                        Thêm
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="mt-3 inline-flex w-full justify-center rounded-md text-white bg-red-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                                        onClick={() => {
+                                                            setOpenForm({ [`create-lecture${index}`]: false })
+                                                        }}
+                                                    >
+                                                        Hủy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
                 </div>
-            </div>
-        </FormWrapper>
+                <div className={`${openForm['form-chapter'] ? '' : 'hidden'} border-dashed border-[1px] py-2 px-5`}>
+
+                    <p className="text-xl font-medium">Chương mới</p>
+                    <div className="p-2">
+                        <div className="text-left">
+                            <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                                <div className="sm:col-span-6">
+                                    <label htmlFor="name" className="block text-base font-medium leading-6 text-gray-900">
+                                        Tên chương
+                                    </label>
+                                    <div className="mt-2">
+                                        <input
+                                            onChange={e => {
+                                                setFormD({ ...formD, name: e.target.value })
+                                            }}
+                                            type="text"
+                                            name="name"
+                                            id="name"
+                                            value={formD.name}
+                                            autoComplete="given-name"
+                                            className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="country" className="block text-base font-medium leading-6 text-gray-900">
+                                        Trạng thái
+                                    </label>
+                                    <div className="mt-2">
+                                        <select
+                                            onChange={(e) => handlerInput(e, 0)}
+                                            id="status"
+                                            name="status"
+                                            autoComplete="country-name"
+                                            className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-input_primary ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-1 sm:text-sm sm:leading-6"
+                                        >
+                                            <option value={true}>Công khai</option>
+                                            <option value={false}>Riêng tư</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-100 py-3 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="submit"
+                                    className="inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        setOpenForm({ [`form-chapter`]: false })
+                                        formData.push(formD)
+                                        setFormData(formData)
+                                        setFormD({ "name": "" })
+                                        updateFields({ chapters: formData })
+                                    }}
+                                >
+                                    Thêm
+                                </button>
+                                <button
+                                    type="button"
+                                    className="mt-3 inline-flex w-full justify-center rounded-md text-white bg-red-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                    onClick={() => {
+                                        setOpenForm({ [`form-chapter`]: false })
+                                    }}
+                                >
+                                    Hủy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <button type="button" className="mt-5 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                    onClick={() => {
+                        setOpenForm({ [`form-chapter`]: true })
+                        setFormD({ "name": "", "lectures": [] })
+                    }}>Thêm chương</button>
+
+            </div >
+
+        </FormWrapper >
     )
 }
+
