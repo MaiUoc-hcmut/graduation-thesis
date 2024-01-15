@@ -4,6 +4,7 @@ import "@/styles/teacher/index.css";
 // import "@/styles/teacher/satoshi.css";
 import { useState, useEffect } from "react";
 import Loader from "@/components/teacher/common/Loader";
+
 import { ReduxProvider } from '@/redux/provider';
 import Sidebar from "@/components/teacher/Sidebar";
 import Header from "@/components/teacher/Header";
@@ -13,6 +14,7 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -20,7 +22,6 @@ export default function RootLayout({
     useEffect(() => {
         setTimeout(() => setLoading(false), 1000);
     }, []);
-
     return (
         <html lang="en">
             <body suppressHydrationWarning={true}>

@@ -13,15 +13,22 @@ const dotenv = require('dotenv').config();
 
 declare global {
     namespace Express {
-      interface Request {
-        teacher?: any;
-      }
+        interface Request {
+            teacher?: any;
+        }
     }
 }
 
-interface RequestWithFile extends Request {
-    file: any; // or the actual type of your file
+type ResponseUploadFile = {
+    name: string,
+    url: string,
 }
+
+interface RequestWithFile extends Request {
+    file: Express.Multer.File;
+    files: Express.Multer.File[];
+}
+
 
 initializeApp(firebaseConfig);
 
@@ -55,15 +62,33 @@ class DocumentController {
     getDocumentCreatedByTeacher = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const teacherId = req.params.teacherId;
-            const teacherAuthId = req.teacher.data.id
-            console.log(teacherAuthId);
-            console.log(teacherId);
+            const teacherAuthId = req.teacher.data.id;
             if (teacherId != teacherAuthId) 
                 return res.status(401).json({ message: "You do not have permission to do this action!" });
 
             const documents = await Document.findAll({
                 where: { id_teacher: teacherId }
-            })
+            });
+
+            res.status(200).json(documents);
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    // [GET] /api/v1/document/folder/:parentId/
+    getDocumentBelongToFolder = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const parentId = req.params.parentId;
+            console.log(parentId)
+            let idToFind = null;
+
+            if (parseInt(parentId, 10) > 0) idToFind = parentId;
+
+            const documents = await Document.findAll({
+                where: { parent_folder_id: idToFind }
+            });
 
             res.status(200).json(documents);
         } catch (error: any) {
@@ -111,15 +136,42 @@ class DocumentController {
         try {
             const id_teacher = req.teacher.data.id;
             const body = req.body;
-            body.id_teacher = id_teacher;
-            const categories = [...body.categories];
-            delete body.categories;
 
-            const newDocument = Document.create({ ...body });
+            const newDocument = await Document.create({ ...body });
+            
+            res.status(201).json(newDocument);
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
+    }
 
-            await newDocument.addCategories(categories);
+    createMultiDocument = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const id_teacher = req.teacher.data.id;
 
-            res.status(200).json(newDocument);
+            const documentsData = req.body
+            let parentId = null;
+
+            if (documentsData.parentId > 0) {
+                parentId = documentsData.parentId;
+            }
+
+            let createdDocuments = [];
+
+            for (const body of documentsData) {
+                const newDocument = await Document.create({
+                    name: body.name,
+                    url: body.url,
+                    parent_folder_id: parentId,
+                    id_teacher
+                });
+
+                createdDocuments.push(newDocument);
+            }
+
+            return res.status(201).json(createdDocuments);
+
         } catch (error: any) {
             console.log(error.message);
             res.status(500).json({ error: error.message });
@@ -149,15 +201,49 @@ class DocumentController {
         }
     }
 
+    uploadMultiFile = async (req: RequestWithFile, res: Response, _next: NextFunction) => {
+        try {
+            const storage = getStorage();
+
+            const urls: ResponseUploadFile[] = [];
+
+            const uploadPromises = req.files.map(async (file) => {
+                const dateTime = DocumentFile.giveCurrentDateTime();
+                const storageRef = ref(storage, `document/${file.originalname + "       " + dateTime}`)
+            
+                // Create file metadata including the content type
+                const metadata = {
+                    contentType: file.mimetype,
+                };
+            
+                const snapshot = await uploadBytes(storageRef, file.buffer, metadata);
+                const url = await getDownloadURL(snapshot.ref);
+                urls.push({
+                    name: file.originalname,
+                    url
+                })
+            });
+            
+            await Promise.all(uploadPromises);
+            
+            res.status(200).send(urls);
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     // [PUT] /api/v1/document/:documentId
     updateDocument = async (req: Request, res: Response, _next: NextFunction) => {
         try {
-            const { teacherId, ...body } = req.body;
-            if (teacherId !== req.teacher.data.id)
-                return res.status(401).json({ message: "You do not have permission to do this action!" });
+            const body = req.body;
+            
             const documentId = req.params.documentId;
 
             const updatedDocument = Document.findByPk(documentId);
+            const teacherId = updatedDocument.id_teacher;
+            if (teacherId !== req.teacher.data.id)
+                return res.status(401).json({ message: "You do not have permission to do this action!" });
             updatedDocument.update(body);
             
             res.status(200).json(updatedDocument);
@@ -170,13 +256,15 @@ class DocumentController {
     // [DELETE] /api/v1/document/:documentId
     deleteDocument = async (req: Request, res: Response, _next: NextFunction) => {
         try {
-            const { teacherId } = req.body;
-            if (teacherId !== req.teacher.data.id)
-                return res.status(401).json({ message: "You do not have permission to do this action!" });
             const documentId = req.params.documentId;
 
             const document = await Document.findByPk(documentId);
             if (!document) return res.status(404).json({ message: "Document does not exist!"});
+
+            const teacherId = document.id_teacher;
+
+            if (teacherId !== req.teacher.data.id)
+                return res.status(401).json({ message: "You do not have permission to do this action!" });
 
             await document.destroy();
 

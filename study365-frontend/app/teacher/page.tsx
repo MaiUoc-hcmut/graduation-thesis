@@ -1,11 +1,9 @@
 'use client'
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
 import Loader from "@/components/teacher/common/Loader";
-
 import ECommerce from "@/components/teacher/Dashboard/E-commerce";
-
 import { useAppSelector } from "@/redux/store";
+import { redirect } from "next/navigation";
 
 export default function TeacherLayout() {
     const [loading, setLoading] = useState<boolean>(true);
@@ -17,10 +15,6 @@ export default function TeacherLayout() {
             redirect('/teacher/login');
         }
     }, [isAuthTeacher, redirect]);
-
-    useEffect(() => {
-        setTimeout(() => setLoading(false), 1000);
-    }, []);
 
     return (
         <ECommerce />

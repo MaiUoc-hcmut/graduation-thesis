@@ -5,6 +5,33 @@ import { BookOpenIcon } from '@heroicons/react/24/solid'
 import { CheckIcon } from '@heroicons/react/24/solid'
 import { useEffect, useState } from 'react'
 
+const COUNTER_KEY = 'my-counter';
+
+function countDown(i) {
+    const timer = setInterval(function () {
+        let minutes = parseInt(i / 60, 10);
+        let seconds = parseInt(i % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        document.getElementById("displayDiv").innerHTML = "" + "0:" + minutes + ":" + seconds;
+        if ((i--) > 0) {
+            window.localStorage.setItem(COUNTER_KEY, i);
+        } else {
+            window.localStorage.removeItem(COUNTER_KEY);
+            clearInterval(timer);
+            // callback();
+        }
+    }, 1000);
+}
+
+window.onload = function () {
+    var countDownTime = window.localStorage.getItem(COUNTER_KEY) || 3600;
+    countDown(countDownTime, function () {
+        alert(123);
+    });
+};
+
+
 
 export default function DetailExam({ params }: { params: { slug: string } }) {
     const [formData, setFormData] = useState({})
@@ -12,7 +39,8 @@ export default function DetailExam({ params }: { params: { slug: string } }) {
         setFormData({ ...formData, [id_question]: answer })
     }
     console.log(formData);
-
+    var countDownTime = window.localStorage.getItem(COUNTER_KEY) || 3600;
+    countDown(countDownTime)
     return (
         <div>
             <div className='p-5 flex flex-row items-center' style={{ "background": "linear-gradient(#fff,#f2f5f9)" }}>
@@ -27,7 +55,163 @@ export default function DetailExam({ params }: { params: { slug: string } }) {
             </div>
             <div className='flex flex-row relative'>
                 <div className='py-2 px-10 w-[70%]'>
+                    <div className='border-1 border-b border-[#333] py-3' >
+                        <p className='text-lg'><span className='font-medium'>Câu 1: </span>Thanh hóa là của nước nào?</p>
+                        <div>
+                            <ul className="mt-2 text-base text-gray-900 rounded-lg dark:bg-gray-700 dark:text-white" onChange={(e) => {
+                                handlerInput('1', e.target.id)
+                            }}>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="A"
+                                            type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">A. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="B" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">B. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="C" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">C. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="D" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">D. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
                     <div className='border-1 border-b border-[#333] py-3'>
+                        <p className='text-lg'><span className='font-medium'>Câu 1: </span>Thanh hóa là của nước nào?</p>
+                        <div>
+                            <ul className="mt-2 text-base text-gray-900 rounded-lg dark:bg-gray-700 dark:text-white" onChange={(e) => {
+                                handlerInput('1', e.target.id)
+                            }}>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="A"
+                                            type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">A. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="B" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">B. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="C" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">C. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="D" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">D. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div className='border-1 border-b border-[#333] py-3'>
+                        <p className='text-lg'><span className='font-medium'>Câu 1: </span>Thanh hóa là của nước nào?</p>
+                        <div>
+                            <ul className="mt-2 text-base text-gray-900 rounded-lg dark:bg-gray-700 dark:text-white" onChange={(e) => {
+                                handlerInput('1', e.target.id)
+                            }}>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="A"
+                                            type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">A. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="B" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">B. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="C" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">C. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="D" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">D. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div className='border-1 border-b border-[#333] py-3'>
+                        <p className='text-lg'><span className='font-medium'>Câu 1: </span>Thanh hóa là của nước nào?</p>
+                        <div>
+                            <ul className="mt-2 text-base text-gray-900 rounded-lg dark:bg-gray-700 dark:text-white" onChange={(e) => {
+                                handlerInput('1', e.target.id)
+                            }}>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="A"
+                                            type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">A. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="B" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">B. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="C" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">C. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                                <li className="w-full rounded-t-lg flex flex-row items-center">
+                                    <div className="flex items-center pl-3">
+                                        <input id="D" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+                                        <label htmlFor="list-radio-license" className="w-full py-1 ml-2 text-base font-medium text-gray-900 dark:text-gray-300">D. </label>
+                                    </div>
+                                    <p>Việt Nam</p>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div className='border-1 border-b border-[#333] py-3' id="question1">
                         <p className='text-lg'><span className='font-medium'>Câu 1: </span>Thanh hóa là của nước nào?</p>
                         <div>
                             <ul className="mt-2 text-base text-gray-900 rounded-lg dark:bg-gray-700 dark:text-white" onChange={(e) => {
@@ -75,7 +259,7 @@ export default function DetailExam({ params }: { params: { slug: string } }) {
                             <div className=''>
                                 <span className='text-[#464646] font-medium'>Thời gian còn lại</span>
                                 <span className='mx-5'>|</span>
-                                <span className='text-white'>50:00</span>
+                                <span className='text-white' id="displayDiv"></span>
                             </div>
                             <div className='mt-2'>
                                 <span className='text-[#464646] font-medium'>Số câu đã làm</span>
@@ -87,9 +271,11 @@ export default function DetailExam({ params }: { params: { slug: string } }) {
                     <div className='mt-5 '>
                         <p className='text-[#2e66ad] rounded-md text-center font-medium text-xl p-2 bg-[#e2e2e2]'>Câu hỏi</p>
                         <div className='bg-[#fafafa] p-2 pt-3 grid grid-cols-6 justify-items-center gap-y-3'>
-                            <div className='bg-[#f0efef] p-2 w-10 h-10 rounded-full flex justify-center items-center'>
-                                1
-                            </div>
+                            <Link href='#question1'>
+                                <div className='bg-[#f0efef] p-2 w-10 h-10 rounded-full flex justify-center items-center'>
+                                    1
+                                </div>
+                            </Link>
                             <div className='bg-[#f0efef] p-2 w-10 h-10 rounded-full flex justify-center items-center'>
                                 1
                             </div>

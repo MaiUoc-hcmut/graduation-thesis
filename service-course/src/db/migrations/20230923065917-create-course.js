@@ -2,6 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+<<<<<<< HEAD
     await queryInterface.createTable('course', {
       id: {
         type: Sequelize.INTEGER.UNSIGNED,
@@ -168,10 +169,71 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
+=======
+    await queryInterface.createTable('documents', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
+      id_teacher: {
+        allowNull: false,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
+      parent_folder_id: {
+        allowNull: true,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
+      name: {
+        type: Sequelize.STRING(100)
+      },
+      url: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      views: {
+        defaultValue: 0,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
+      downloads: {
+        defaultValue: 0,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
+      createdAt :{
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+      }
+    });
+    await queryInterface.createTable('folders', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER.UNSIGNED
+      },
+      parent_folder_id: {
+        type: Sequelize.INTEGER.UNSIGNED,
+      },
+      name: {
+        type: Sequelize.STRING(100)
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+>>>>>>> 580929be76bd954e7215edc4075205d5a111910a
     });
   },
 
   async down(queryInterface, Sequelize) {
+<<<<<<< HEAD
     await queryInterface.dropTable('lecture');
     await queryInterface.dropTable('chapter');
     await queryInterface.dropTable('course');
@@ -179,5 +241,9 @@ module.exports = {
     // await queryInterface.dropTable('categories');
     // await queryInterface.dropTable('documentlecture');
     // await queryInterface.dropTable('documentcategory');
+=======
+    await queryInterface.dropTable('documents');
+    await queryInterface.dropTable('folders');
+>>>>>>> 580929be76bd954e7215edc4075205d5a111910a
   },
 };
